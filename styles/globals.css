@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@layer components {
+    .nft-container {
+        @apply max-w-4xl mx-auto p-4;
+    }
+
+    .nft-visual-container {
+        @apply bg-white rounded-lg shadow-lg overflow-hidden mb-8;
+    }
+
+    .nft-canvas {
+        @apply w-full h-full;
+    }
+
+    .management-container {
+        @apply bg-white rounded-lg shadow-lg p-6;
+    }
+
+    .input-field {
+        @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500;
+    }
+
+    .btn-primary {
+        @apply bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 
+               transition-colors duration-200 disabled:bg-gray-400 disabled:cursor-not-allowed;
+    }
+
+    .btn-secondary {
+        @apply bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600 
+               transition-colors duration-200;
+    }
+
+    .error-message {
+        @apply text-red-500 text-sm mt-2;
+    }
+
+    .success-message {
+        @apply text-green-500 text-sm mt-2;
+    }
+
+    .timer-display {
+        @apply text-lg font-semibold text-gray-700;
+    }
+
+    .state-badge {
+        @apply px-3 py-1 rounded-full text-sm font-medium;
+    }
+
+    .state-badge-auction {
+        @apply bg-blue-100 text-blue-800;
+    }
+
+    .state-badge-display {
+        @apply bg-green-100 text-green-800;
+    }
+
+    .state-badge-disposed {
+        @apply bg-gray-100 text-gray-800;
+    }
+} 
