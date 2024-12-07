@@ -10,7 +10,7 @@ interface NFTVisualProps {
 
 // 常量配置
 const CANVAS_SIZE = 600;
-const FONT_SIZE = 150;
+const FONT_SIZE = 100;
 const PARTICLE_SIZE = 1.5;
 const STROKE_DENSITY = 2;
 const MAX_STROKE_WIDTH = 12;
