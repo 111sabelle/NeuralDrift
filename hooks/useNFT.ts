@@ -24,9 +24,7 @@ export function useNFT(tokenId?: string) {
     try {
       setIsLoading(true);
       const owner = await contract.read.ownerOf([tokenId]);
-
       console.log("owner", owner);
-
       const nftData = await contract.read.nfts([tokenId]);
       console.log("NFT data:", nftData);
 

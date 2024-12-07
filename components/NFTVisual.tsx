@@ -25,6 +25,7 @@ export const NFTVisual: React.FC<NFTVisualProps> = ({
   const canvasRef = useRef<HTMLDivElement>(null);
   const p5Instance = useRef<P5>();
   const [font, setFont] = useState<P5.Font | null>(null);
+  const [fontLoaded, setFontLoaded] = useState(false);
 
   const generatePointsFromText = (
     p: P5,
@@ -132,51 +133,65 @@ export const NFTVisual: React.FC<NFTVisualProps> = ({
     const sketch = (p: P5) => {
       let blendedPoints: Point[] = [];
       let inkPoints: Point[] = [];
+      let fontRef: P5.Font | null = null;
+      let cachedPoints: Point[] = []; // 用于缓存生成的点阵
+
+      p.preload = () => {
+        fontRef = p.loadFont(
+          "/fonts/638538048043b31b724cc980_SourceCodePro-VariableFont_wght.ttf"
+        );
+      };
 
       p.setup = () => {
         p.createCanvas(CANVAS_SIZE, CANVAS_SIZE);
         p.background(255);
-        p.loadFont(
-          "/fonts/638538048043b31b724cc980_SourceCodePro-VariableFont_wght.ttf",
-          (f) => setFont(f)
-        );
-      };
 
-      p.draw = () => {
-        if (!font) return;
-
-        p.background(255);
-        p.textFont(font);
-        p.textSize(FONT_SIZE);
-        p.textAlign(p.CENTER, p.CENTER);
+        if (!fontRef) return; // 确保字体已加载
 
         const canvasCenter = { x: CANVAS_SIZE / 2, y: CANVAS_SIZE / 2 };
 
         if (isDisplayPeriod) {
-          // 显示期只显示最高价值代币
-          const points = generatePointsFromText(
+          // 显示期只生成一次点阵
+          cachedPoints = generatePointsFromText(
             p,
-            font,
+            fontRef,
             tokens[0].symbol,
             canvasCenter
           );
-          drawPoints(p, points);
         } else {
-          // 计算所有代币的总价值
+          // 非显示期生成所有点阵并混合
           const totalValue = tokens.reduce(
             (sum, token) => sum + (token.usdValue || 0),
             0
           );
 
-          // 生成每个代币的点阵并计算权重
           const allPoints = tokens.map((token) => ({
-            points: generatePointsFromText(p, font, token.symbol, canvasCenter),
+            points: generatePointsFromText(
+              p,
+              fontRef as P5.Font,
+              token.symbol,
+              canvasCenter
+            ),
             weight: (token.usdValue || 0) / totalValue,
           }));
 
           blendedPoints = blendMultipleParticles(allPoints);
           inkPoints = generateInkEffects(p, blendedPoints);
 
+          cachedPoints = blendedPoints.concat(inkPoints);
+        }
+      };
+
+      p.draw = () => {
+        if (!fontRef || cachedPoints.length === 0) return; // 确保字体和点阵已加载
+
+        p.background(255);
+
+        if (isDisplayPeriod) {
+          // 显示期绘制缓存的点阵
+          drawPoints(p, cachedPoints);
+        } else {
+          // 绘制混合点阵和墨水效果
           drawPoints(p, blendedPoints);
           drawInkEffects(p, inkPoints);
         }
@@ -188,7 +203,7 @@ export const NFTVisual: React.FC<NFTVisualProps> = ({
     return () => {
       p5Instance.current?.remove();
     };
-  }, [tokens, isDisplayPeriod, font]);
+  }, [tokens, isDisplayPeriod]);
 
   return (
     <div

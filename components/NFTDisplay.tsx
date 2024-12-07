@@ -35,7 +35,8 @@ export const NFTDisplay: React.FC<NFTDisplayProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { state: nftState } = useNFTState(tokenId);
-  const isDisplayPeriod = nftState === NFTState.DISPLAY;
+  const isDisplayPeriod =
+    nftState === NFTState.DISPLAY || nftState === NFTState.AUCTION;
   const { contract } = useContract();
 
   // useEffect(() => {
