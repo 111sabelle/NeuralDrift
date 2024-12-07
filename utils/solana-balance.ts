@@ -81,7 +81,7 @@ export class SolanaBalanceReader {
 
           return {
             mint: parsedInfo.mint,
-            symbol: tokenInfo?.metadata.symbol || "Unknown",
+            symbol: tokenInfo?.token_info.symbol || "Unknown",
             address: parsedInfo.mint,
             amount,
             decimals: parsedInfo.tokenAmount.decimals,
