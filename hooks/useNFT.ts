@@ -15,9 +15,6 @@ export function useNFT(tokenId?: string) {
 
   const fetchNFTData = async () => {
     if (!contract) return;
-
-    console.log("contract", contract);
-
     const tokenId = await contract.read?.currentTokenId([]);
     console.log("Token ID:", tokenId.toString());
 

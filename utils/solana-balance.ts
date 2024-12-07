@@ -34,6 +34,26 @@ export class SolanaBalanceReader {
     }
   }
 
+  getAssetBatch = async (tokens: string[]) => {
+    const urls = process.env.NEXT_PUBLIC_SOLANA_RPC_URL ?? "";
+    const response = await fetch(urls, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "my-id",
+        method: "getAssetBatch",
+        params: {
+          ids: tokens,
+        },
+      }),
+    });
+    const { result } = await response.json();
+    return result;
+  };
+
   async getTokenBalances(address: string): Promise<TokenInfo[]> {
     console.log("开始获取代币余额，地址:", address);
     try {
@@ -42,14 +62,26 @@ export class SolanaBalanceReader {
         pubkey,
         { programId: TOKEN_PROGRAM_ID }
       );
+
+      const ids = tokenAccounts.value.map(
+        (account) => account.account.data.parsed.info.mint
+      );
+      const tokenInfos = await this.getAssetBatch(ids);
+
+      console.log("获取到的代币账户:", tokenInfos);
       const tokens = tokenAccounts.value
         .map((account) => {
           const parsedInfo = account.account.data.parsed.info;
-          const tokenInfo = this.tokenList.get(parsedInfo.mint);
+          const tokenInfo = tokenInfos.find(
+            (r: any) => r.id === parsedInfo.mint
+          );
           const amount = Number(parsedInfo.tokenAmount.uiAmount);
+
+          console.log("tokenInfotokenInfotokenInfo", tokenInfo);
+
           return {
             mint: parsedInfo.mint,
-            symbol: tokenInfo?.symbol || "Unknown",
+            symbol: tokenInfo?.metadata.symbol || "Unknown",
             address: parsedInfo.mint,
             amount,
             decimals: parsedInfo.tokenAmount.decimals,
